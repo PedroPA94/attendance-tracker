@@ -9,3 +9,61 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Instructor {
+  id         String  @id @default(uuid())
+  first_name String
+  last_name  String
+  email      String
+  password   String
+  Class      Class[]
+}
+
+model Student {
+  id         Int          @id @default(autoincrement())
+  first_name String
+  last_name  String
+  email      String?
+  phone      String?
+  birthdate  String?
+  cpf        String?
+  Enrollment Enrollment[]
+}
+
+model Class {
+  id           Int          @id @default(autoincrement())
+  type         String
+  school       String
+  day          Day
+  start_time   String
+  end_time     String
+  instructor   Instructor   @relation(fields: [instructorId], references: [id])
+  instructorId String
+  Enrollment   Enrollment[]
+}
+
+model Enrollment {
+  id         Int          @id @default(autoincrement())
+  class      Class        @relation(fields: [classId], references: [id])
+  classId    Int
+  student    Student      @relation(fields: [studentId], references: [id])
+  studentId  Int
+  Attendance Attendance[]
+}
+
+model Attendance {
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id])
+  enrollmentId Int        @unique
+  date         DateTime   @unique
+  attended     Boolean
+}
+
+enum Day {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
